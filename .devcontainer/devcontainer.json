@@ -1,0 +1,25 @@
+{
+	"name": "Ubuntu",
+	"build": {
+		"context": "..",
+		"dockerfile": "./Dockerfile"
+	},
+	"remoteUser": "ubuntu",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"JacquesLucke.gcov-viewer",
+				"Tyriar.sort-lines",
+				"dtoplak.vscode-glsllint",
+				"eamodio.gitlens",
+				"janjoerke.align-by-regex",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"ms-vscode.cmake-tools",
+				"ms-vscode.cpptools",
+				"slevesque.shader",
+				"yzhang.markdown-all-in-one",
+				"cschlosser.doxdocgen"
+			]
+		}
+	}
+}
