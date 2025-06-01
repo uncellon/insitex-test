@@ -2,11 +2,9 @@
 #define FILE_LOGGER_STRATEGY_H
 
 #include "loggerstrategy.h"
-#include <chrono>
 #include <condition_variable>
-#include <mutex>
+#include <fstream>
 #include <queue>
-#include <thread>
 
 class FileLoggerStrategy : public Insitex::IPC::LoggerStrategy {
 public:
@@ -31,7 +29,7 @@ protected:
      * Methods (Protected)
      *************************************************************************/
 
-    void writeLoop(const std::string& logPath);
+    void writeLoop();
 
     /**************************************************************************
      * Members
@@ -41,6 +39,7 @@ protected:
     std::mutex mMessagesToWriteMtx;
     std::queue<std::string> mMessagesToWrite;
     std::thread mWriteThread;
+    std::ofstream mLogFile;
     bool mIsRunning = true;
 
 }; // class FileLoggerStrategy

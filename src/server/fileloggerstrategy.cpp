@@ -1,21 +1,23 @@
 #include "fileloggerstrategy.h"
-#include <chrono>
-#include <format>
-#include <fstream>
-#include <mutex>
 
 /******************************************************************************
  * Constructors / Destructors
  *****************************************************************************/
 
 FileLoggerStrategy::FileLoggerStrategy(const std::string& path) {
-    mWriteThread = std::thread(&FileLoggerStrategy::writeLoop, this, path);
+    mLogFile.open(path, std::ios::app);
+    if (!mLogFile.is_open()) {
+        throw std::runtime_error("Failed to create/open log file");
+    }
+    mWriteThread = std::thread(&FileLoggerStrategy::writeLoop, this);
 }
 
 FileLoggerStrategy::~FileLoggerStrategy() {
     mIsRunning = false;
     mCv.notify_one();
     mWriteThread.join();
+
+    mLogFile.close();
 }
 
 /******************************************************************************
@@ -41,9 +43,7 @@ void FileLoggerStrategy::write(
  * Methods (Protected)
  *****************************************************************************/
 
-void FileLoggerStrategy::writeLoop(const std::string& logPath) {
-    std::ofstream logFile(logPath, std::ios::app);
-
+void FileLoggerStrategy::writeLoop() {
     std::unique_lock lock(mMessagesToWriteMtx);
     while (mIsRunning) {
         if (mMessagesToWrite.empty()) {
@@ -51,8 +51,10 @@ void FileLoggerStrategy::writeLoop(const std::string& logPath) {
             continue;
         }
 
-        logFile << mMessagesToWrite.front();
+        mLogFile << mMessagesToWrite.front();
         mMessagesToWrite.pop();
-        logFile.flush();
+        mLogFile.flush();
     }
+
+    mLogFile.close();
 }
